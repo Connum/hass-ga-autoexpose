@@ -1,0 +1,2 @@
+export_entities:
+  description: "Export entities exposed to Google Assistant to exposed.yaml."

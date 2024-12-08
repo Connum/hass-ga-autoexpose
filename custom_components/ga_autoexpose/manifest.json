@@ -1,0 +1,14 @@
+{
+    "domain": "ga_autoexpose",
+    "name": "Google Assistant Auto-Expose",
+    "iot_class": "cloud_polling",
+    "documentation": "",
+    "requirements": [],
+    "after_dependencies": ["google_assistant"],
+    "dependencies": ["google_assistant"],
+    "codeowners": [
+        "@Connum"
+    ],
+    "version": "0.0.1"
+}
+  
