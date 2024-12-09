@@ -18,6 +18,8 @@ You will then have a new action (formerly called "service") `ga_autoexpose.expor
 Include this file as the `entity_config` content in the `google_assistant` section of your **configuration.yaml** in your config folder, e.g:
 
 ```yaml
+ga_autoexpose:
+
 google_assistant:
   project_id: ***
   service_account: !include SERVICE_ACCOUNT.JSON
