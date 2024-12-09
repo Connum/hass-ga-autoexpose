@@ -4,6 +4,7 @@ import yaml
 import logging
 
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import async_get as async_get_device_registry
 from homeassistant.helpers.entity_registry import async_get as async_get_entity_registry
 from homeassistant.const import CLOUD_NEVER_EXPOSED_ENTITIES
 
@@ -67,18 +68,29 @@ async def async_setup(hass: HomeAssistant, config: dict):
                 registry_entry = entity_registry.async_get(entity_id)
                 aliases = list(registry_entry.aliases) if registry_entry and registry_entry.aliases else []
 
-                # Fetch both names
-                friendly_name = registry_entry.original_name if registry_entry else None
+                # Fetch all names
                 google_assistant_name = settings.get("name")
+                friendly_name = getattr(registry_entry, "name", None)
+                original_name = getattr(registry_entry, "original_name", None)
+                
+                # check for the device name
+                device_name = None
+                if not friendly_name and not original_name and not google_assistant_name and registry_entry.device_id:
+                    device_registry = async_get_device_registry(hass)
+                    device_entry = device_registry.async_get(registry_entry.device_id)
+                    _LOGGER.debug("device_entry: %s", device_entry)
+                    if device_entry:
+                        device_name = getattr(device_entry, "name_by_user", None) or getattr(device_entry, "name", None)
 
                 # Determine the display name (prioritize original_name)
-                display_name = friendly_name or google_assistant_name or entity_id
+                display_name = friendly_name or google_assistant_name or original_name or device_name or entity_id
 
                 # Log for debugging
                 _LOGGER.debug(
-                    "Entity: %s, Friendly Name: %s, Google Assistant Name: %s, Final Name: %s",
+                    "Entity: %s, Friendly Name: %s, Original Name: %s, Google Assistant Name: %s, Final Name: %s",
                     entity_id,
                     friendly_name,
+                    original_name,
                     google_assistant_name,
                     display_name,
                 )
